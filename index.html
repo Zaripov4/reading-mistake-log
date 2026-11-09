@@ -63,6 +63,15 @@ h2{font-size:20px;margin:0 0 4px;color:var(--navy)}
 .tm .times{color:var(--mute);font-size:14px;white-space:nowrap}
 .tm .fix{margin:6px 0 0;font-size:15px}
 .tm .fix b{color:var(--navy)}
+.wgroup{margin-bottom:14px}
+.wgroup h3{font-size:15px;margin:0 0 6px;color:var(--mute);font-weight:700}
+.wrow{display:grid;grid-template-columns:minmax(0,9.5em) minmax(0,1fr) 2.2em;gap:8px;align-items:center;font-size:15px;padding:3px 0}
+.wrow .bar{height:12px;border-radius:6px;background:var(--line);overflow:hidden}
+.wrow .bar i{display:block;height:100%;background:var(--navy);opacity:.6;border-radius:6px}
+.wrow.worst{font-weight:700}
+.wrow.worst .bar i{background:var(--accent);opacity:1}
+.wrow b{text-align:right}
+.wtip{font-size:14px;background:var(--accent-soft);border-radius:10px;padding:10px 12px;margin-top:4px}
 .empty{color:var(--mute);text-align:center;padding:10px 0;font-size:15px}
 
 /* history */
@@ -179,6 +188,12 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline
     <div class="top" id="top"></div>
   </section>
 
+  <section class="card" id="whereCard" hidden>
+    <h2>Where you lose marks</h2>
+    <p class="sub" id="whereSub">From the question numbers and question types you entered. Passages are usually questions 1–13, 14–26 and 27–40.</p>
+    <div id="where"></div>
+  </section>
+
   <section class="card" id="histCard" hidden>
     <h2>My wrong answers</h2>
     <p class="sub">Newest first.</p>
@@ -246,28 +261,28 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline
 const REASONS = [
   {name:"Spelling or -s", hint:"Right word, written wrong",
    why:"You found the right word, but the spelling or the -s was wrong.",
-   fix:"Copy words from the text letter by letter. Check if the word before the gap needs one thing or many (a, many, two). Keep a list of words you misspell."},
+   fix:"Copy words from the text letter by letter. Check if the gap needs one thing or many (a, many, two) and the right form of the word (economy or economic?). Keep a notebook of words you misspell."},
   {name:"Too many words", hint:"Broke the word limit",
    why:"You wrote more words than the question allows.",
-   fix:"Circle the rule first, like NO MORE THAN TWO WORDS. Count your words. Never change the words from the text."},
+   fix:"Circle the rule first, like NO MORE THAN TWO WORDS. Count carefully: 'red and yellow' is three words, and a/an/the count too. A number counts as one word. If it says 'from the text', don't change the words."},
   {name:"Not Given mix-up", hint:"True, False or Not Given confusion",
    why:"You mixed up Not Given with True or False. Maybe you used what you know, not what the text says.",
-   fix:"False means the text says the opposite. Not Given means the text doesn't say it at all. Only use the text, never your own knowledge. Same words in the question and the text don't make it True: check the meaning."},
+   fix:"False means the text says the opposite. Not Given means the text doesn't say it at all. Only use the text, never your own knowledge. Same words don't make it True: check the meaning. Watch words like some, mainly, always and claimed, suggests, believes: they change the meaning. In Yes/No/Not Given, only the writer's opinion counts, not other people's."},
   {name:"Keyword trap", hint:"Picked it because the words matched",
    why:"You picked the answer because it used the same words as the text, but the meaning was different.",
-   fix:"Matching words alone don't make an answer right. Read the whole sentence in the text and check it means the same as the option. The right answer often uses different words."},
+   fix:"Matching words alone don't make an answer right. Read the whole sentence in the text and check it means the same as the option. Watch for but and however, which change the meaning. In a word list, an option copied straight from the text is often a trap."},
   {name:"Different words", hint:"The text said it in other words",
    why:"The text said the answer with different words from the question, so you didn't notice it.",
    fix:"Before reading, underline 2 key words in the question and think of other ways to say them. After the test, write each pair (question word → text word) in a list."},
   {name:"Wrong part of the text", hint:"Looked in the wrong place",
    why:"You took the answer from the wrong part of the text, or couldn't find the right part.",
-   fix:"In multiple choice, sentence completion and short answers, the answers follow the order of the text. In headings, matching and summary or table completion they can be anywhere. Look for names, numbers and capital letters to find the place fast. For headings, read the whole paragraph."},
+   fix:"Find the place first, then decide the answer. In multiple choice, sentence completion and short answers, the answers follow the order of the text; in matching and summary or table completion they can be anywhere. Names, numbers and capital letters help you find the place. For headings: don't look at the headings first. Sum up each paragraph in 2–3 words (the first sentences and the last one help most), then match."},
   {name:"Ran out of time", hint:"Guessed or didn't reach it",
    why:"You guessed or didn't reach this question because time ran out.",
-   fix:"The passages get harder, so give the last one more time: about 15 minutes for Passage 1, 20 for Passage 2 and 25 for Passage 3. If a question is hard, skip it and come back. There's no extra time to copy answers, so write them as you go. Never leave an answer empty."},
+   fix:"Aim for about 20 minutes per passage. Passage 3 is the hardest, so if you finish early, save the time for it. If a question is hard, skip it and come back. There's no extra time to copy answers, so write them as you go. Never leave an answer empty. If you often run out of time, the real fix is usually more vocabulary and practice with each question type, not a faster clock."},
   {name:"New word", hint:"I didn't know a key word",
    why:"A key word in the text or question was new to you.",
-   fix:"Write it in a word list with its meaning and an example sentence. Read one article in English every day to meet new words."},
+   fix:"First guess the meaning from the sentence, then check it. Write it in a notebook with its meaning and the sentence you found it in, and review the notebook every week. Read English articles on many topics to meet new words."},
   {name:"Read the question wrong", hint:"Missed NOT, only, all…",
    why:"You missed a small but important word in the question.",
    fix:"Circle small words that change the meaning: NOT, only, all, always, never, some, most, two answers. Read the question twice before you look for the answer."}
@@ -339,7 +354,7 @@ const TREE_LETTER = { ...ASK_TIME, yes:R.TIME,
 // headings
 const TREE_HEAD = { ...ASK_TIME, yes:R.TIME,
   no:{ q:"Did you pick your heading because it had the same word as the paragraph?", h:"", yes:R.TRAP,
-       no:{ q:"Did you only read the first line or two of the paragraph?", h:"The main idea is often in the middle or at the end.", yes:R.PLACE,
+       no:{ q:"Did you choose the heading before you understood the main idea of the paragraph?", h:"For example, you looked at the headings first, or read only one sentence.", yes:R.PLACE,
             no:{ q:"Did you know all the important words in the paragraph?", h:"", no:R.NEW, yes:R.DIFF } } } };
 // True / False / Not Given
 function treeTFNG(){
@@ -351,10 +366,10 @@ function treeTFNG(){
 }
 const TF = ["TRUE / YES","FALSE / NO","NOT GIVEN"];
 const KINDS = {
-  t:{label:"True / False / Not Given", sub:"Also Yes / No / Not Given"},
-  w:{label:"I wrote words", sub:"Completing sentences, notes, tables, short answers"},
-  l:{label:"I chose a letter", sub:"Multiple choice or matching (A, B, C…)"},
-  h:{label:"Matching headings", sub:"Answers like i, ii, iii, iv"}
+  t:{label:"True / False / Not Given", short:"True/False/NG", sub:"Also Yes / No / Not Given"},
+  w:{label:"I wrote words", short:"Writing words", sub:"Completing sentences, notes, tables, short answers"},
+  l:{label:"I chose a letter", short:"Choosing a letter", sub:"Multiple choice or matching (A, B, C…)"},
+  h:{label:"Matching headings", short:"Headings", sub:"Answers like i, ii, iii, iv"}
 };
 
 /* ---------- state ---------- */
@@ -526,6 +541,30 @@ function renderTop(){
       <p class="fix"><b>How to fix it:</b> ${REASONS[i].fix}</p>
     </div>`).join("");
 }
+// Part of the test from the question number
+// Passage from the question number (most tests: 1-13, 14-26, 27-40)
+const PART = { label:"Passage", count:3, of:q => q <= 13 ? 1 : q <= 26 ? 2 : 3,
+  tip:{3:"Most of your mistakes are in Passage 3, the hardest one. That usually means vocabulary and reading speed: read more articles on academic topics."} };
+function renderWhere(){
+  const list = state.mistakes.slice(-RECENT);
+  const withQ = list.filter(m => m.q), withK = list.filter(m => m.k && KINDS[m.k]);
+  $("whereCard").hidden = withQ.length < 3 && withK.length < 3;
+  if ($("whereCard").hidden) return;
+  const rows = (pairs) => { const max = Math.max(...pairs.map(x=>x[1]), 1), top = Math.max(...pairs.map(x=>x[1]));
+    return pairs.map(([lab,n]) => `<div class="wrow ${n && n===top ? "worst" : ""}"><span>${lab}</span><span class="bar"><i style="width:${Math.round(n/max*100)}%"></i></span><b>${n}</b></div>`).join(""); };
+  let html = "";
+  if (withQ.length >= 3){
+    const c = Array(PART.count).fill(0); withQ.forEach(m => c[PART.of(m.q)-1]++);
+    html += `<div class="wgroup"><h3>By ${PART.label.toLowerCase()}</h3>${rows(c.map((n,i)=>[`${PART.label} ${i+1}`, n]))}</div>`;
+    const worst = c.indexOf(Math.max(...c)) + 1;
+    if (PART.tip[worst] && c[worst-1] >= 2) html += `<p class="wtip">${PART.tip[worst]}</p>`;
+  }
+  if (withK.length >= 3){
+    const ks = Object.keys(KINDS), c = ks.map(k => withK.filter(m => m.k === k).length);
+    html += `<div class="wgroup" style="margin-top:12px"><h3>By question type</h3>${rows(ks.map((k,i)=>[KINDS[k].short, c[i]]))}</div>`;
+  }
+  $("where").innerHTML = html;
+}
 let showAll = false;
 function renderHist(){
   const list = state.mistakes.map((m,i)=>({m,i})).reverse();
@@ -653,7 +692,7 @@ document.querySelectorAll("dialog").forEach(d => d.addEventListener("click", e =
 
 function renderSeg(){ $("modSeg").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.m === state.module))); }
 $("modSeg").onclick = e => { const b = e.target.closest("button"); if (!b) return; state.module = b.dataset.m; save(); renderSeg(); };
-function renderAll(){ renderSeg(); renderReasons(); renderTop(); renderHist(); renderScores(); $("bandNow").textContent = ""; }
+function renderAll(){ renderSeg(); renderReasons(); renderTop(); renderWhere(); renderHist(); renderScores(); $("bandNow").textContent = ""; }
 load();
 $("welcome").hidden = !!state.seenWelcome;
 renderAll();
