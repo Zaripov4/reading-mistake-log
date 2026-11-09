@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reading Mistake Log</title>
+<meta name="description" content="Find out why you lose marks in IELTS Reading, and fix it.">
+<meta name="theme-color" content="#0B5E5C">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Reading Log">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+:root{
+  --bg:#F3F6FA; --card:#FFFFFF; --fg:#16212E; --mute:#5B6878; --line:#DDE4EC;
+  --navy:#1F3A5F; --accent:#0E7C7B; --accent-soft:#DDF1F0; --ok:#1B7F3B; --ok-soft:#E4F4E9;
+  --btn:#FFFFFF; --btn-press:#DDF1F0; --primary:#1F3A5F; --danger:#B3261E;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#0F151D; --card:#18212C; --fg:#E8EEF5; --mute:#9DAABA; --line:#2A3542;
+  --navy:#9DBBE0; --accent:#3CC2BE; --accent-soft:#12302F; --ok:#5CC57E; --ok-soft:#163222;
+  --btn:#1E2935; --btn-press:#12302F; --primary:#2F5585; --danger:#FF8A80; color-scheme:dark}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font:17px/1.45 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:560px;margin:0 auto;padding:calc(14px + env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) calc(40px + env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+header h1{font-size:22px;margin:0;color:var(--navy);line-height:1.2}
+.help{border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:999px;padding:8px 14px;font:inherit;font-size:15px;font-weight:700;cursor:pointer}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+h2{font-size:20px;margin:0 0 4px;color:var(--navy)}
+.sub{color:var(--mute);margin:0 0 14px;font-size:15px}
+.welcome{background:#0B5E5C;color:#fff;border:0}
+.welcome h2{color:#fff}
+.welcome ol{margin:8px 0 12px;padding-left:22px}
+.welcome li{margin:4px 0}
+.welcome button{background:#F2A65A;color:#16212E;color:#fff;border:0;border-radius:10px;padding:12px 18px;font:inherit;font-weight:700;width:100%;cursor:pointer}
+
+.big{display:block;width:100%;background:var(--accent);color:#fff;border:0;border-radius:14px;padding:16px;font:inherit;font-size:19px;font-weight:700;cursor:pointer}
+.big:active{transform:scale(.98)}
+.link{background:none;border:0;color:var(--navy);font:inherit;font-size:15px;font-weight:700;text-decoration:underline;cursor:pointer;padding:10px 0 0;display:block;margin:0 auto}
+
+/* quick mode buttons */
+.reasons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.reason{position:relative;text-align:left;background:var(--btn);color:var(--fg);border:2px solid var(--line);border-radius:14px;padding:14px 12px 12px;min-height:88px;font:inherit;cursor:pointer;transition:transform .08s, background .15s, border-color .15s}
+.reason:active{transform:scale(.97)}
+.reason.flash{background:var(--btn-press);border-color:var(--accent)}
+.reason b{display:block;font-size:16px;line-height:1.2;padding-right:30px}
+.reason span{display:block;font-size:13px;color:var(--mute);margin-top:4px;line-height:1.3}
+.reason i{position:absolute;top:10px;right:10px;font-style:normal;font-weight:700;font-size:14px;min-width:26px;height:26px;border-radius:13px;background:var(--accent-soft);color:var(--fg);display:grid;place-items:center;padding:0 7px}
+.count{margin-top:12px;color:var(--mute);font-size:15px;text-align:center}
+
+/* top 3 */
+.top{display:grid;gap:10px}
+.tm{border-radius:14px;padding:14px;background:var(--bg);border:1px solid var(--line)}
+.tm.first{background:var(--accent-soft);border-color:var(--accent)}
+.tm .row{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.tm .rank{font-size:13px;font-weight:700;color:var(--accent);letter-spacing:.04em;text-transform:uppercase}
+.tm .name{font-weight:700;font-size:18px}
+.tm .times{color:var(--mute);font-size:14px;white-space:nowrap}
+.tm .fix{margin:6px 0 0;font-size:15px}
+.tm .fix b{color:var(--navy)}
+.empty{color:var(--mute);text-align:center;padding:10px 0;font-size:15px}
+
+/* history */
+.hist{list-style:none;margin:0;padding:0}
+.hist li{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line);font-size:15px}
+.hist .q{flex:none;font-weight:700;min-width:38px;color:var(--navy)}
+.hist .what{flex:1;min-width:0;overflow-wrap:anywhere}
+.hist .what s{color:var(--mute)}
+.hist .tag{display:inline-block;margin-top:3px;font-size:13px;font-weight:700;background:var(--accent-soft);border-radius:999px;padding:1px 9px}
+.x{border:0;background:none;color:var(--mute);font-size:22px;line-height:1;cursor:pointer;padding:0 6px}
+
+/* scores */
+.scoreform{display:flex;gap:10px}
+.scoreform input{flex:1;min-width:0;font:inherit;font-size:22px;font-weight:700;text-align:center;padding:10px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--fg)}
+.scoreform input:focus{outline:none;border-color:var(--accent)}
+.primary{background:var(--primary);color:#fff;border:0;border-radius:12px;padding:0 20px;font:inherit;font-weight:700;cursor:pointer}
+.bandnow{margin-top:12px;text-align:center;font-size:16px;min-height:24px}
+.bandnow b{font-size:26px;color:var(--ok)}
+.chart{margin-top:14px;overflow-x:auto}
+.scores{list-style:none;margin:10px 0 0;padding:0}
+.scores li{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid var(--line);font-size:15px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:0;border:2px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:12px}
+.seg button{font:inherit;font-size:15px;font-weight:700;padding:10px;border:0;background:var(--bg);color:var(--mute);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.chips{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.chips button{font:inherit;font-size:16px;font-weight:700;padding:12px 8px;border-radius:12px;border:2px solid var(--line);background:var(--btn);color:var(--fg);cursor:pointer}
+.chips button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.note{font-size:12px;color:var(--mute);margin-top:8px}
+
+.tools{display:grid;gap:8px}
+.tool{width:100%;text-align:left;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;cursor:pointer}
+.tool.danger{color:var(--danger)}
+.tool.armed{background:#B3261E;color:#fff;border-color:#B3261E}
+
+/* detective (full-screen sheet) */
+dialog{border:0;border-radius:18px;padding:0;max-width:520px;width:calc(100% - 24px);background:var(--card);color:var(--fg);max-height:calc(100% - 24px)}
+dialog::backdrop{background:rgba(10,15,22,.6)}
+.dbody{padding:20px}
+.dtop{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.dtop .step{font-size:13px;font-weight:700;color:var(--accent);letter-spacing:.04em;text-transform:uppercase}
+label{display:block;font-weight:700;margin:12px 0 6px}
+label small{font-weight:400;color:var(--mute)}
+.hint{color:var(--mute);font-size:14px;margin:-2px 0 8px}
+.field{width:100%;font:inherit;font-size:19px;padding:12px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--fg)}
+.field:focus{outline:none;border-color:var(--accent)}
+.field.qn{width:110px;text-align:center;font-weight:700}
+.err{color:var(--danger);font-size:15px;min-height:20px;margin-top:8px}
+.ask{font-size:20px;font-weight:700;line-height:1.3;margin:4px 0 6px}
+.askhelp{color:var(--mute);font-size:15px;margin:0 0 16px}
+.yn{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.yn button{font:inherit;font-size:19px;font-weight:700;padding:16px;border-radius:14px;border:2px solid var(--line);background:var(--btn);color:var(--fg);cursor:pointer}
+.yn button:active{background:var(--btn-press)}
+.result{background:var(--accent-soft);border:2px solid var(--accent);border-radius:14px;padding:16px;margin:4px 0 14px}
+.result .k{font-size:13px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.04em}
+.result .n{font-size:24px;font-weight:700;margin:2px 0 6px}
+.result .ex{font-size:15px;color:var(--fg);margin:0 0 8px}
+.result .fx{font-size:15px;margin:0}
+.result .fx b{color:var(--navy)}
+.same{background:var(--ok-soft);border:2px solid var(--ok);border-radius:14px;padding:16px;margin-bottom:14px}
+.row2{display:flex;gap:10px;margin-top:6px}
+.row2 .big{flex:1}
+.ghost{flex:1;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:14px;font:inherit;font-weight:700;padding:14px;cursor:pointer}
+.pick{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.pick button{font:inherit;font-size:15px;text-align:left;padding:10px 12px;border-radius:12px;border:2px solid var(--line);background:var(--btn);color:var(--fg);cursor:pointer}
+.kinds{display:grid;gap:10px;margin-top:12px}
+.kinds button{text-align:left;font:inherit;padding:16px;border-radius:14px;border:2px solid var(--line);background:var(--btn);color:var(--fg);cursor:pointer}
+.kinds button:active{background:var(--btn-press)}
+.kinds b{display:block;font-size:18px}
+.kinds span{display:block;color:var(--mute);font-size:14px;margin-top:2px}
+.reason:last-child:nth-child(odd),.pick button:last-child:nth-child(odd){grid-column:1/-1}
+.close{border:0;background:var(--bg);color:var(--fg);border-radius:999px;width:36px;height:36px;font-size:20px;cursor:pointer}
+
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translate(-50%,140%);background:#16212E;color:#fff;border-radius:12px;padding:12px 14px 12px 16px;display:flex;gap:14px;align-items:center;box-shadow:0 8px 24px rgba(0,0,0,.25);transition:transform .2s;max-width:calc(100% - 32px);z-index:5;font-size:15px}
+.toast.show{transform:translate(-50%,0)}
+.toast button{background:none;border:0;color:#FFB27A;font:inherit;font-weight:700;cursor:pointer;padding:4px}
+#helpDlg .dbody ol{padding-left:22px;margin:0 0 12px}
+#helpDlg li{margin:6px 0}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Reading<br>Mistake Log</h1>
+    <button class="help" id="helpBtn" type="button">How to use</button>
+  </header>
+
+  <section class="card welcome" id="welcome" hidden>
+    <h2>Hi! Here's how it works</h2>
+    <ol>
+      <li>Do a Reading practice test and check your answers.</li>
+      <li>For <b>every wrong answer</b>, tap <b>Check a wrong answer</b>. The app finds out why you lost the mark.</li>
+      <li>Type your score out of 40.</li>
+      <li>Your <b>top 3 mistakes</b> and how to fix them appear here.</li>
+    </ol>
+    <button type="button" id="welcomeOk">OK, let's start</button>
+  </section>
+
+  <section class="card">
+    <h2>Got a question wrong?</h2>
+    <p class="sub">Have your answers and the reading text ready. Do this for each wrong answer.</p>
+    <button class="big" type="button" id="detectBtn">🔍 Check a wrong answer</button>
+    <button class="link" type="button" id="quickToggle" aria-expanded="false">I already know why (quick mode)</button>
+    <div id="quick" hidden>
+      <div class="reasons" id="reasons"></div>
+    </div>
+    <div class="count" id="count"></div>
+  </section>
+
+  <section class="card">
+    <h2>Your top 3 mistakes</h2>
+    <p class="sub" id="topSub">Fix #1 first. Then the next one.</p>
+    <div class="top" id="top"></div>
+  </section>
+
+  <section class="card" id="histCard" hidden>
+    <h2>My wrong answers</h2>
+    <p class="sub">Newest first.</p>
+    <ul class="hist" id="hist"></ul>
+    <button class="link" type="button" id="moreBtn" hidden>Show all</button>
+  </section>
+
+  <section class="card">
+    <h2>My scores</h2>
+    <p class="sub">After each test, type your score (out of 40).</p>
+    <div class="seg" id="modSeg" role="group" aria-label="Which test do you take?">
+      <button type="button" data-m="a">Academic</button><button type="button" data-m="g">General Training</button>
+    </div>
+    <form class="scoreform" id="scoreForm" autocomplete="off" novalidate>
+      <input id="scoreIn" type="number" inputmode="numeric" min="0" max="40" placeholder="e.g. 28" aria-label="Score out of 40">
+      <button class="primary" type="submit">Save</button>
+    </form>
+    <div class="bandnow" id="bandNow" aria-live="polite"></div>
+    <div class="chart" id="chart"></div>
+    <ul class="scores" id="scores"></ul>
+    <p class="note">Bands are approximate. Academic and General Training use different tables, and the real conversion changes a little between tests.</p>
+  </section>
+
+  <section class="card">
+    <h2>Share and save</h2>
+    <p class="sub">Send your top mistakes and scores to a teacher, a parent or a friend.</p>
+    <button class="big" type="button" id="shareBtn" style="background:var(--primary)">📤 Send my results</button>
+    <p class="sub" style="margin:18px 0 10px">Your data is saved only on this phone. <b>Changing phones?</b> Save a backup file here, then load it on the new phone. You don't need to open the file.</p>
+    <div class="tools">
+      <button class="tool" type="button" id="backupBtn">⬇︎ Save a backup file (for a new phone)</button>
+      <button class="tool" type="button" id="restoreBtn">⬆︎ Load a backup file (on the new phone)</button>
+      <input type="file" id="restoreIn" accept=".json,application/json" hidden>
+      <button class="tool danger" type="button" id="resetBtn">Start again (delete everything)</button>
+    </div>
+  </section>
+</div>
+
+<div class="toast" id="toast" role="status"><span id="toastMsg"></span><button type="button" id="undoBtn">Undo</button></div>
+
+<!-- the mistake detective -->
+<dialog id="det" aria-label="Check a wrong answer">
+  <div class="dbody">
+    <div class="dtop"><span class="step" id="detStep">Step 1</span><button class="close" type="button" id="detClose" aria-label="Close">×</button></div>
+    <div id="detView"></div>
+  </div>
+</dialog>
+
+<dialog id="helpDlg" aria-label="How to use">
+  <div class="dbody">
+    <h2 style="margin-bottom:10px">How to use</h2>
+    <ol>
+      <li>Do one Reading practice test. Cambridge IELTS books are best.</li>
+      <li>Check your answers. Keep the <b>reading text</b> open next to you.</li>
+      <li>For <b>each wrong answer</b>, tap <b>Check a wrong answer</b>. Pick the kind of question, type your answer and the right answer. The app may ask you 1–3 easy yes/no questions.</li>
+      <li>Type your score out of 40 under <b>My scores</b>.</li>
+      <li>Look at <b>Your top 3 mistakes</b>. Before the next test, practise only the fix for #1.</li>
+    </ol>
+    <p class="sub"><b>Tip:</b> add this page to your home screen so it opens like an app. iPhone: Share → Add to Home Screen. Android: ⋮ → Add to Home screen.</p>
+    <form method="dialog"><button class="big" style="background:var(--primary)">Got it</button></form>
+  </div>
+</dialog>
+
+<script>
+const REASONS = [
+  {name:"Spelling or -s", hint:"Right word, written wrong",
+   why:"You found the right word, but the spelling or the -s was wrong.",
+   fix:"Copy words from the text letter by letter. Check if the word before the gap needs one thing or many (a, many, two). Keep a list of words you misspell."},
+  {name:"Too many words", hint:"Broke the word limit",
+   why:"You wrote more words than the question allows.",
+   fix:"Circle the rule first, like NO MORE THAN TWO WORDS. Count your words. Never change the words from the text."},
+  {name:"Not Given mix-up", hint:"True, False or Not Given confusion",
+   why:"You mixed up Not Given with True or False. Maybe you used what you know, not what the text says.",
+   fix:"False means the text says the opposite. Not Given means the text doesn't say it at all. Only use the text, never your own knowledge. If you can't find it after 1 minute, it's probably Not Given."},
+  {name:"Keyword trap", hint:"Picked it because the words matched",
+   why:"You picked the answer because it used the same words as the text, but the meaning was different.",
+   fix:"Same words usually mean a trap. Read the whole sentence in the text and ask: does it mean the same? The right answer usually uses different words."},
+  {name:"Different words", hint:"The text said it in other words",
+   why:"The text said the answer with different words from the question, so you didn't notice it.",
+   fix:"Before reading, underline 2 key words in the question and think of other ways to say them. After the test, write each pair (question word → text word) in a list."},
+  {name:"Wrong part of the text", hint:"Looked in the wrong place",
+   why:"You took the answer from the wrong part of the text, or couldn't find the right part.",
+   fix:"Answers usually come in order. Find names, numbers and capital letters first to find the place fast. For headings, read the whole paragraph, not just the first line."},
+  {name:"Ran out of time", hint:"Guessed or didn't reach it",
+   why:"You guessed or didn't reach this question because time ran out.",
+   fix:"20 minutes per passage, then move on, even if you're not finished. Do the easy question types first. Never leave an answer empty; always guess."},
+  {name:"New word", hint:"I didn't know a key word",
+   why:"A key word in the text or question was new to you.",
+   fix:"Write it in a word list with its meaning and an example sentence. Read one article in English every day to meet new words."},
+  {name:"Read the question wrong", hint:"Missed NOT, only, all…",
+   why:"You missed a small but important word in the question.",
+   fix:"Circle small words that change the meaning: NOT, only, all, always, never, some, most, two answers. Read the question twice before you look for the answer."}
+];
+const R = {SPELL:0, WORDS:1, NG:2, TRAP:3, DIFF:4, PLACE:5, TIME:6, NEW:7, QUES:8};
+const BANDS = {
+  a:[[39,9],[37,8.5],[35,8],[33,7.5],[30,7],[27,6.5],[23,6],[19,5.5],[15,5],[13,4.5],[10,4]],
+  g:[[40,9],[39,8.5],[37,8],[36,7.5],[34,7],[32,6.5],[30,6],[27,5.5],[23,5],[19,4.5],[15,4]] };
+const RECENT = 40;
+const KEY = "rml-v1";
+const band = (raw, m) => { for (const [min,b] of BANDS[m || state.module || "a"]) if (raw >= min) return b.toFixed(1); return "below 4"; };
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+/* ---------- automatic checks ---------- */
+const norm = s => s.toLowerCase().replace(/[^\p{L}\p{N}\s]/gu," ").replace(/\s+/g," ").trim();
+function lev(a,b){ // edit distance where swapping two neighbouring letters counts as 1
+  const m=a.length,n=b.length, d=[...Array(m+1)].map((_,i)=>[i,...Array(n).fill(0)]);
+  for(let j=0;j<=n;j++) d[0][j]=j;
+  for(let i=1;i<=m;i++) for(let j=1;j<=n;j++){
+    const c = a[i-1]===b[j-1]?0:1;
+    d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+c);
+    if(i>1&&j>1&&a[i-1]===b[j-2]&&a[i-2]===b[j-1]) d[i][j]=Math.min(d[i][j],d[i-2][j-2]+1);
+  }
+  return d[m][n]; }
+function plural(a,b){ // true if a and b differ only by a plural ending
+  const f=(x,y)=> y===x+"s" || y===x+"es" || (x.endsWith("y") && y===x.slice(0,-1)+"ies");
+  return f(a,b) || f(b,a); }
+// returns {r: reason index} | {same:true} | null (needs questions)
+function autoCheck(mine, right){
+  const a = norm(mine), b = norm(right);
+  if (!b) return null;
+  if (a === b) return {same:true};
+  if (!a) return null;
+  const aw = a.split(" "), bw = b.split(" ");
+  // extra words around the right answer -> word limit
+  if (aw.length > bw.length && (" "+a+" ").includes(" "+b+" ")) return {r:R.WORDS};
+  if (aw.length === bw.length){
+    const diff = aw.map((w,i)=>[w,bw[i]]).filter(([x,y])=>x!==y);
+    if (diff.length === 1){
+      const [x,y] = diff[0];
+      if (plural(x,y)) return {r:R.SPELL};
+      if (/^\d+$/.test(x) || /^\d+$/.test(y)) return null;
+      const d = lev(x,y);
+      // 1 slip for normal words, 2 only for long words (so Tuesday/Thursday is NOT spelling)
+      if (y.length >= 4 && d <= (y.length >= 9 ? 2 : 1)) return {r:R.SPELL};
+    }
+  }
+  return null;
+}
+
+/* ---------- the yes/no questions ---------- */
+// each node: question, help text, yes -> next, no -> next (number = reason index)
+const ASK_TIME = { q:"Did you guess this one because time was running out?", h:"" };
+const ASK_DIFF = { q:"Find the answer in the text. Did the text say it with different words from the question?", h:"For example, the question says 'cheap' but the text says 'low cost'." };
+// words: wrote something wrong
+const TREE_WROTE = { ...ASK_TIME, yes:R.TIME,
+  no:{ q:"Find the answer in the text. Were you looking in the right part of the text?", h:"", no:R.PLACE,
+       yes:{ q:"Did you know all the important words in that sentence?", h:"Be honest. It's fine if some were new.", no:R.NEW,
+             yes:{ ...ASK_DIFF, yes:R.DIFF, no:R.QUES } } } };
+// words: left empty
+const TREE_EMPTY = { ...ASK_TIME, yes:R.TIME,
+  no:{ q:"Could you find where the answer was in the text?", h:"", no:R.PLACE,
+       yes:{ q:"Did you know all the important words there?", h:"", no:R.NEW, yes:R.DIFF } } };
+// letters: multiple choice / matching
+const TREE_LETTER = { ...ASK_TIME, yes:R.TIME,
+  no:{ q:"Did the option YOU chose use the same words as the text?", h:"Same words but a different meaning is a common trap.", yes:R.TRAP,
+       no:{ ...ASK_DIFF, h:"For example, the option says 'too expensive' but the text says 'they couldn't afford it'.", yes:R.DIFF,
+            no:{ q:"Did you misread the question? (for example, it asked for NOT true, or for the writer's opinion)", h:"", yes:R.QUES, no:R.PLACE } } } };
+// headings
+const TREE_HEAD = { ...ASK_TIME, yes:R.TIME,
+  no:{ q:"Did you pick your heading because it had the same word as the paragraph?", h:"", yes:R.TRAP,
+       no:{ q:"Did you only read the first line or two of the paragraph?", h:"The main idea is often in the middle or at the end.", yes:R.PLACE,
+            no:{ q:"Did you know all the important words in the paragraph?", h:"", no:R.NEW, yes:R.DIFF } } } };
+// True / False / Not Given
+function treeTFNG(){
+  const ng = det.mine === "NOT GIVEN" || det.right === "NOT GIVEN";
+  if (!det.mine) return { ...ASK_TIME, yes:R.TIME, no:R.PLACE };
+  return { ...ASK_TIME, yes:R.TIME,
+    no: ng ? R.NG : { q:"Did the question have a small word like only, all, always, never or some that you missed?", h:"These small words often decide True or False.", yes:R.QUES,
+                      no:{ ...ASK_DIFF, yes:R.DIFF, no:R.PLACE } } };
+}
+const TF = ["TRUE / YES","FALSE / NO","NOT GIVEN"];
+const KINDS = {
+  t:{label:"True / False / Not Given", sub:"Also Yes / No / Not Given"},
+  w:{label:"I wrote words", sub:"Completing sentences, notes, tables, short answers"},
+  l:{label:"I chose a letter", sub:"Multiple choice or matching (A, B, C…)"},
+  h:{label:"Matching headings", sub:"Answers like i, ii, iii, iv"}
+};
+
+/* ---------- state ---------- */
+let state = {mistakes:[], scores:[], seenWelcome:false, module:"a"};
+function load(){ try{ const s = JSON.parse(localStorage.getItem(KEY)); if (s && Array.isArray(s.mistakes)) state = Object.assign(state, s); }catch(e){} }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+const $ = id => document.getElementById(id);
+
+let undo = null, toastTimer = null;
+function toast(msg, undoFn){
+  $("toastMsg").textContent = msg; undo = undoFn; $("undoBtn").hidden = !undoFn;
+  $("toast").classList.add("show");
+  clearTimeout(toastTimer); toastTimer = setTimeout(()=>$("toast").classList.remove("show"), 4000);
+}
+$("undoBtn").onclick = () => { if (undo) undo(); undo = null; $("toast").classList.remove("show"); };
+
+function addMistake(m){ state.mistakes.push(Object.assign({d:Date.now()}, m)); save(); renderAll(); }
+const counts = list => { const c = REASONS.map(()=>0); list.forEach(m => c[m.r]++); return c; };
+
+/* ---------- detective flow ---------- */
+let det = {};
+const fresh = () => ({kind:"", q:"", mine:"", right:"", mineSet:false, rightSet:false});
+function openDetective(){ det = fresh(); showKind(); $("det").showModal(); }
+function setStep(t){ $("detStep").textContent = t; }
+function showKind(){
+  setStep("Step 1 of 3");
+  $("detView").innerHTML = `
+    <p class="ask">What kind of question was it?</p>
+    <div class="kinds">${Object.entries(KINDS).map(([k,v])=>`<button type="button" data-k="${k}"><b>${v.label}</b><span>${v.sub}</span></button>`).join("")}</div>`;
+  $("detView").querySelector(".kinds").onclick = e => { const b = e.target.closest("button"); if (b){ det.kind = b.dataset.k; showForm(); } };
+}
+function showForm(err){
+  setStep("Step 2 of 3");
+  const k = det.kind, short = k === "l" || k === "h";
+  const qField = `
+      <label for="fQ">Which question did you get wrong?</label>
+      <p class="hint">Type its number. For example, if you got question 25 wrong, type 25.</p>
+      <input class="field qn" id="fQ" type="number" inputmode="numeric" min="1" max="40" placeholder="25" value="${esc(det.q)}">`;
+  let ans;
+  if (k === "t"){
+    const chips = (id, withEmpty) => `<div class="chips" id="${id}">${TF.map(t=>`<button type="button" data-v="${t === "NOT GIVEN" ? t : t.split(" / ")[0]}">${t}</button>`).join("")}${withEmpty ? `<button type="button" data-v="">I left it empty</button>` : ""}</div>`;
+    ans = `<label>What did you choose?</label>${chips("cMine", true)}<label>What is the right answer?</label>${chips("cRight", false)}`;
+  } else {
+    const ph = k === "h" ? ["iv","vi"] : k === "l" ? ["B","C"] : ["Leave empty if you wrote nothing","From the answer key"];
+    ans = `
+      <label for="fMine">${k === "w" ? "What did you write?" : k === "h" ? "Which heading did you choose?" : "Which letter did you choose?"}</label>
+      <input class="field ${short ? "qn" : ""}" id="fMine" type="text" autocapitalize="${k === "l" ? "characters" : "off"}" spellcheck="false" maxlength="${short ? 5 : 60}" placeholder="${ph[0]}" value="${esc(det.mine)}">
+      <label for="fRight">${k === "w" ? "What is the right answer?" : k === "h" ? "Which heading is right?" : "Which letter is right?"}</label>
+      <input class="field ${short ? "qn" : ""}" id="fRight" type="text" autocapitalize="${k === "l" ? "characters" : "off"}" spellcheck="false" maxlength="${short ? 5 : 60}" placeholder="${ph[1]}" value="${esc(det.right)}">`;
+  }
+  $("detView").innerHTML = `<form id="detForm" novalidate autocomplete="off">${qField}${ans}
+      <div class="err" id="fErr">${err ? esc(err) : ""}</div>
+      <button class="big" type="submit">Next</button>
+      <button class="link" type="button" id="bk">← Back</button></form>`;
+  if (k === "t"){
+    const pick = (id, key) => { const box = $(id);
+      const mark = () => box.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(det[key+"Set"] && b.dataset.v === det[key])));
+      box.onclick = e => { const b = e.target.closest("button"); if (!b) return; det[key] = b.dataset.v; det[key+"Set"] = true; mark(); };
+      mark(); };
+    pick("cMine","mine"); pick("cRight","right");
+  }
+  $("bk").onclick = () => showKind();
+  $("detForm").onsubmit = e => {
+    e.preventDefault();
+    det.q = $("fQ").value.trim();
+    if (k !== "t"){ det.mine = $("fMine").value.trim(); det.right = $("fRight").value.trim(); }
+    if (k === "l"){ det.mine = det.mine.toUpperCase(); det.right = det.right.toUpperCase(); }
+    if (k === "h"){ det.mine = det.mine.toLowerCase(); det.right = det.right.toLowerCase(); }
+    const qn = Number(det.q);
+    if (det.q && (!Number.isInteger(qn) || qn < 1 || qn > 40)) return showForm("The question number must be between 1 and 40.");
+    if (k === "t" && !det.mineSet) return showForm("Please tap what you chose.");
+    if (!det.right) return showForm(k === "t" ? "Please tap the right answer." : k === "w" ? "Please type the right answer." : k === "h" ? "Please type the right heading." : "Please type the right letter.");
+    if (k === "w"){
+      const auto = autoCheck(det.mine, det.right);
+      if (auto && auto.same) return showSame();
+      if (auto) return showResult(auto.r, true);
+      return showQuestion(det.mine ? TREE_WROTE : TREE_EMPTY, []);
+    }
+    if (det.mine && det.mine === det.right) return showSame();
+    showQuestion(k === "t" ? treeTFNG() : k === "h" ? TREE_HEAD : TREE_LETTER, []);
+  };
+  setTimeout(()=>{ const f = $("fQ"); if (f && !det.q) f.focus(); }, 50);
+}
+function showSame(){
+  setStep("Check again");
+  $("detView").innerHTML = `
+    <div class="same"><b>These look the same.</b><br>“${esc(det.mine)}” and “${esc(det.right)}”. Maybe your answer was right? Check the answer key again, or fix what you typed.</div>
+    <div class="row2"><button class="ghost" type="button" id="bk">Change answers</button><button class="big" type="button" id="cl">Close</button></div>`;
+  $("bk").onclick = () => showForm(); $("cl").onclick = () => $("det").close();
+}
+function showQuestion(node, path){
+  setStep("Step 3 of 3 · question " + (path.length + 1));
+  $("detView").innerHTML = `
+    <p class="ask">${node.q}</p>
+    <p class="askhelp">${node.h}</p>
+    <div class="yn"><button type="button" id="yY">Yes</button><button type="button" id="yN">No</button></div>
+    <button class="link" type="button" id="bk">← Back</button>`;
+  const go = next => typeof next === "number" ? showResult(next, false) : showQuestion(next, path.concat(node));
+  $("yY").onclick = () => go(node.yes);
+  $("yN").onclick = () => go(node.no);
+  $("bk").onclick = () => path.length ? showQuestion(path[path.length-1], path.slice(0,-1)) : showForm();
+}
+function showResult(r, auto, picking){
+  setStep("Result");
+  const R0 = REASONS[r];
+  const what = det.mine ? `You ${det.kind === "w" ? "wrote" : "chose"} “${esc(det.mine)}”. The answer is “${esc(det.right)}”.` : `You left it empty. The answer is “${esc(det.right)}”.`;
+  $("detView").innerHTML = `
+    <div class="result">
+      <div class="k">${auto ? "Found it" : "This was"}${det.q ? " · Q" + esc(det.q) : ""}</div>
+      <div class="n">${R0.name}</div>
+      <p class="ex">${what} ${R0.why}</p>
+      <p class="fx"><b>How to fix it:</b> ${R0.fix}</p>
+    </div>
+    <div class="row2"><button class="big" type="button" id="sv">Save</button></div>
+    <button class="link" type="button" id="ch">That's not right, let me choose</button>
+    <div class="pick" id="pick" ${picking ? "" : "hidden"}>${REASONS.map((x,i)=>`<button type="button" data-i="${i}">${x.name}</button>`).join("")}</div>`;
+  $("sv").onclick = () => {
+    addMistake({r, k: det.kind, q: det.q ? Number(det.q) : null, mine: det.mine, right: det.right});
+    showSaved(r);
+  };
+  $("ch").onclick = () => { $("pick").hidden = !$("pick").hidden; };
+  $("pick").onclick = e => { const b = e.target.closest("button"); if (b) showResult(+b.dataset.i, false, false); };
+}
+function showSaved(r){
+  setStep("Saved");
+  $("detView").innerHTML = `
+    <div class="same"><b>Saved: ${REASONS[r].name}</b><br>${state.mistakes.length} wrong answer${state.mistakes.length>1?"s":""} saved so far.</div>
+    <button class="big" type="button" id="nx">Check the next wrong answer</button>
+    <button class="link" type="button" id="dn">I'm done</button>`;
+  $("nx").onclick = () => { det = fresh(); showKind(); };
+  $("dn").onclick = () => $("det").close();
+}
+$("detectBtn").onclick = openDetective;
+$("detClose").onclick = () => $("det").close();
+
+/* ---------- quick mode ---------- */
+$("quickToggle").onclick = () => {
+  const q = $("quick"); q.hidden = !q.hidden;
+  $("quickToggle").setAttribute("aria-expanded", String(!q.hidden));
+  $("quickToggle").textContent = q.hidden ? "I already know why (quick mode)" : "Hide quick mode";
+};
+$("reasons").addEventListener("click", e => {
+  const b = e.target.closest(".reason"); if (!b) return;
+  const i = +b.dataset.i;
+  addMistake({r:i});
+  const nb = $("reasons").querySelector(`[data-i="${i}"]`);
+  nb.classList.add("flash"); setTimeout(()=>nb.classList.remove("flash"), 350);
+  toast(`Saved: ${REASONS[i].name}`, () => { state.mistakes.pop(); save(); renderAll(); });
+});
+
+/* ---------- render ---------- */
+function renderReasons(){
+  const c = counts(state.mistakes);
+  $("reasons").innerHTML = REASONS.map((r,i)=>
+    `<button class="reason" type="button" data-i="${i}">${c[i] ? `<i>${c[i]}</i>` : ""}<b>${r.name}</b><span>${r.hint}</span></button>`).join("");
+  const n = state.mistakes.length;
+  $("count").textContent = n ? `${n} wrong answer${n>1?"s":""} saved` : "";
+}
+function renderTop(){
+  const c = counts(state.mistakes.slice(-RECENT));
+  const order = c.map((n,i)=>[n,i]).filter(x=>x[0]>0).sort((a,b)=>b[0]-a[0] || a[1]-b[1]).slice(0,3);
+  $("topSub").textContent = state.mistakes.length > RECENT
+    ? `From your last ${RECENT} wrong answers. Fix #1 first.` : "Fix #1 first. Then the next one.";
+  if (!order.length){ $("top").innerHTML = `<div class="empty">Check your wrong answers above. Your top mistakes will show here.</div>`; return; }
+  $("top").innerHTML = order.map(([n,i],k)=>`
+    <div class="tm ${k===0?"first":""}">
+      <div class="row"><span class="rank">#${k+1}</span><span class="times">${n} time${n>1?"s":""}</span></div>
+      <div class="name">${REASONS[i].name}</div>
+      <p class="fix"><b>How to fix it:</b> ${REASONS[i].fix}</p>
+    </div>`).join("");
+}
+let showAll = false;
+function renderHist(){
+  const list = state.mistakes.map((m,i)=>({m,i})).reverse();
+  $("histCard").hidden = !list.length;
+  const shown = showAll ? list : list.slice(0,8);
+  $("hist").innerHTML = shown.map(({m,i})=>{
+    const d = new Date(m.d).toLocaleDateString(undefined,{day:"numeric",month:"short"});
+    const what = m.right !== undefined
+      ? (m.mine ? `<s>${esc(m.mine)}</s> → ${esc(m.right)}` : `(empty) → ${esc(m.right)}`)
+      : `<span style="color:var(--mute)">quick mode</span>`;
+    return `<li><span class="q">${m.q ? "Q"+m.q : "·"}</span><span class="what">${what}<br><span class="tag">${REASONS[m.r].name}</span> <span style="color:var(--mute);font-size:13px">${d}</span></span><button class="x" type="button" data-i="${i}" aria-label="Delete">×</button></li>`;
+  }).join("");
+  $("moreBtn").hidden = list.length <= 8;
+  $("moreBtn").textContent = showAll ? "Show less" : `Show all (${list.length})`;
+}
+$("moreBtn").onclick = () => { showAll = !showAll; renderHist(); };
+$("hist").addEventListener("click", e => {
+  const b = e.target.closest(".x"); if (!b) return;
+  const i = +b.dataset.i, removed = state.mistakes.splice(i,1)[0]; save(); renderAll();
+  toast("Deleted", () => { state.mistakes.splice(i,0,removed); save(); renderAll(); });
+});
+function renderScores(){
+  const s = state.scores;
+  $("scores").innerHTML = s.map((x,i)=>({x,i})).reverse().map(({x,i})=>{
+    const d = new Date(x.d).toLocaleDateString(undefined,{day:"numeric",month:"short"});
+    return `<li><span>${d}</span><span><b>${x.s}</b>/40 · band ${band(x.s, x.m)}</span><button class="x" type="button" data-i="${i}" aria-label="Delete this score">×</button></li>`;
+  }).join("");
+  const last = s.slice(-10);
+  if (last.length < 2){ $("chart").innerHTML = ""; return; }
+  const W = 320, H = 120, pad = 18, bw = (W - pad) / last.length;
+  const y = v => H - 16 - (v/40)*(H - 30);
+  let svg = `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Your last scores">`;
+  [10,20,30,40].forEach(v => svg += `<line x1="${pad}" x2="${W}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="0" y="${y(v)+4}" font-size="10" fill="var(--mute)">${v}</text>`);
+  last.forEach((x,i)=>{
+    const X = pad + i*bw + bw*0.18, w = bw*0.64, top = y(x.s), isLast = i === last.length-1;
+    svg += `<rect x="${X}" y="${top}" width="${w}" height="${H-16-top}" rx="3" fill="${isLast?'var(--accent)':'var(--navy)'}" opacity="${isLast?1:.55}"/>`;
+    svg += `<text x="${X+w/2}" y="${top-4}" font-size="10" text-anchor="middle" fill="var(--fg)">${x.s}</text>`;
+  });
+  $("chart").innerHTML = svg + `</svg>`;
+}
+$("scores").addEventListener("click", e => {
+  const b = e.target.closest(".x"); if (!b) return;
+  const i = +b.dataset.i, removed = state.scores.splice(i,1)[0]; save(); renderAll();
+  toast("Score deleted", () => { state.scores.splice(i,0,removed); save(); renderAll(); });
+});
+$("scoreForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const v = Number($("scoreIn").value);
+  if ($("scoreIn").value === "" || !Number.isInteger(v) || v < 0 || v > 40){
+    $("bandNow").textContent = "Please type a whole number from 0 to 40."; return;
+  }
+  state.scores.push({s:v, m:state.module, d:Date.now()}); save(); $("scoreIn").value = ""; $("scoreIn").blur();
+  renderAll();
+  $("bandNow").innerHTML = `${v}/40 = band <b>${band(v)}</b>`;
+});
+
+/* ---------- backup / restore / reset ---------- */
+$("backupBtn").onclick = () => {
+  const blob = new Blob([JSON.stringify(state)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `listening-mistakes-${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  toast("Backup saved. Keep it for your new phone.");
+};
+$("restoreBtn").onclick = () => $("restoreIn").click();
+$("restoreIn").onchange = async e => {
+  const f = e.target.files[0]; if (!f) return;
+  try{
+    const s = JSON.parse(await f.text());
+    if (!Array.isArray(s.mistakes) || !Array.isArray(s.scores)) throw 0;
+    const before = JSON.stringify(state);
+    state = Object.assign({mistakes:[],scores:[],seenWelcome:true}, s); save(); renderAll();
+    toast("Backup loaded", () => { state = JSON.parse(before); save(); renderAll(); });
+  }catch(_){ toast("That file is not a Mistake Log backup"); }
+  e.target.value = "";
+};
+let armTimer = null;
+$("resetBtn").onclick = () => {
+  const b = $("resetBtn");
+  if (!b.classList.contains("armed")){
+    b.classList.add("armed"); b.textContent = "Tap again to delete everything";
+    armTimer = setTimeout(()=>{ b.classList.remove("armed"); b.textContent = "Start again (delete everything)"; }, 4000);
+    return;
+  }
+  clearTimeout(armTimer);
+  const before = JSON.stringify(state);
+  state = {mistakes:[], scores:[], seenWelcome:true, module:state.module}; save(); renderAll();
+  b.classList.remove("armed"); b.textContent = "Start again (delete everything)";
+  toast("Everything deleted", () => { state = JSON.parse(before); save(); renderAll(); });
+};
+
+/* ---------- readable report to share ---------- */
+function reportText(){
+  const name = document.title;
+  const today = new Date().toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"});
+  const c = counts(state.mistakes.slice(-RECENT));
+  const order = c.map((n,i)=>[n,i]).filter(x=>x[0]>0).sort((a,b)=>b[0]-a[0] || a[1]-b[1]).slice(0,3);
+  const L = [`My IELTS ${name} (${today})`, `Wrong answers checked: ${state.mistakes.length}`];
+  if (order.length){ L.push("", "My top mistakes:"); order.forEach(([n,i],k)=>L.push(`${k+1}. ${REASONS[i].name}: ${n} time${n>1?"s":""}`)); }
+  if (state.scores.length){
+    const s = state.scores, last = s[s.length-1];
+    L.push("", `Scores: ${s.slice(-6).map(x=>x.s).join(", ")} (out of 40)`, `Latest: ${last.s}/40, about band ${band(last.s, last.m)}`);
+  }
+  const recent = state.mistakes.filter(m => m.right !== undefined).slice(-10).reverse();
+  if (recent.length){ L.push("", "Last wrong answers:"); recent.forEach(m => L.push(`${m.q ? "Q"+m.q+" " : ""}${m.mine || "(empty)"} → ${m.right}: ${REASONS[m.r].name}`)); }
+  L.push("", `Made with ${name}: ${location.href.split("#")[0]}`);
+  return L.join("\n");
+}
+$("shareBtn").onclick = async () => {
+  if (!state.mistakes.length && !state.scores.length){ toast("Nothing to send yet. Check a wrong answer first."); return; }
+  const text = reportText();
+  if (navigator.share){
+    try { await navigator.share({title: document.title, text}); return; }
+    catch(e){ if (e && e.name === "AbortError") return; }
+  }
+  try { await navigator.clipboard.writeText(text); toast("Copied. Paste it into Telegram or a message."); }
+  catch(e){ toast("Couldn't copy. Please try again."); }
+};
+
+$("helpBtn").onclick = () => $("helpDlg").showModal();
+$("welcomeOk").onclick = () => { state.seenWelcome = true; save(); $("welcome").hidden = true; };
+// tap outside a dialog closes it
+document.querySelectorAll("dialog").forEach(d => d.addEventListener("click", e => { if (e.target === d) d.close(); }));
+
+function renderSeg(){ $("modSeg").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.m === state.module))); }
+$("modSeg").onclick = e => { const b = e.target.closest("button"); if (!b) return; state.module = b.dataset.m; save(); renderSeg(); };
+function renderAll(){ renderSeg(); renderReasons(); renderTop(); renderHist(); renderScores(); $("bandNow").textContent = ""; }
+load();
+$("welcome").hidden = !!state.seenWelcome;
+renderAll();
+</script>
+</body>
+</html>
