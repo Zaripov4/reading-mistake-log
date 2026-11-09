@@ -367,8 +367,8 @@ function treeTFNG(){
 const TF = ["TRUE / YES","FALSE / NO","NOT GIVEN"];
 const KINDS = {
   t:{label:"True / False / Not Given", short:"True/False/NG", sub:"Also Yes / No / Not Given"},
-  w:{label:"I wrote words", short:"Writing words", sub:"Completing sentences, notes, tables, short answers"},
-  l:{label:"I chose a letter", short:"Choosing a letter", sub:"Multiple choice or matching (A, B, C…)"},
+  w:{label:"I wrote words", short:"Writing words", sub:"Sentence, summary, note, table or flow-chart completion, diagram labels, short answers"},
+  l:{label:"I chose a letter", short:"Choosing a letter", sub:"Multiple choice, matching information, features or sentence endings, or a box of words (A, B, C…)"},
   h:{label:"Matching headings", short:"Headings", sub:"Answers like i, ii, iii, iv"}
 };
 
@@ -475,7 +475,7 @@ function showQuestion(node, path){
 function showResult(r, auto, picking){
   setStep("Result");
   const R0 = REASONS[r];
-  const what = det.mine ? `You ${det.kind === "w" ? "wrote" : "chose"} “${esc(det.mine)}”. The answer is “${esc(det.right)}”.` : `You left it empty. The answer is “${esc(det.right)}”.`;
+  const what = det.mine ? `You ${det.kind === "w" || det.mine.length > 2 ? "wrote" : "chose"} “${esc(det.mine)}”. The answer is “${esc(det.right)}”.` : `You left it empty. The answer is “${esc(det.right)}”.`;
   $("detView").innerHTML = `
     <div class="result">
       <div class="k">${auto ? "Found it" : "This was"}${det.q ? " · Q" + esc(det.q) : ""}</div>
