@@ -199,7 +199,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline
     <div class="bandnow" id="bandNow" aria-live="polite"></div>
     <div class="chart" id="chart"></div>
     <ul class="scores" id="scores"></ul>
-    <p class="note">Bands are approximate. Academic and General Training use different tables, and the real conversion changes a little between tests.</p>
+    <p class="note">Band tables from IDP IELTS. They show the average marks needed; the real marks can change a little between tests. Academic and General Training use different tables.</p>
   </section>
 
   <section class="card">
@@ -237,6 +237,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline
       <li>Look at <b>Your top 3 mistakes</b>. Before the next test, practise only the fix for #1.</li>
     </ol>
     <p class="sub"><b>Tip:</b> add this page to your home screen so it opens like an app. iPhone: Share → Add to Home Screen. Android: ⋮ → Add to Home screen.</p>
+    <p class="sub" style="font-size:13px">The tips are based on official IELTS guidance from <a href="https://ielts.idp.com/prepare/article-question-types-academic-reading" target="_blank" rel="noopener">IDP</a> and the <a href="https://takeielts.britishcouncil.org/sites/default/files/ielts_reading.pdf" target="_blank" rel="noopener">British Council</a>. Band tables: <a href="https://ielts.idp.com/thailand/results/scores/reading" target="_blank" rel="noopener">IDP IELTS</a>. Not affiliated with IELTS, IDP, the British Council or Cambridge.</p>
     <form method="dialog"><button class="big" style="background:var(--primary)">Got it</button></form>
   </div>
 </dialog>
@@ -251,19 +252,19 @@ const REASONS = [
    fix:"Circle the rule first, like NO MORE THAN TWO WORDS. Count your words. Never change the words from the text."},
   {name:"Not Given mix-up", hint:"True, False or Not Given confusion",
    why:"You mixed up Not Given with True or False. Maybe you used what you know, not what the text says.",
-   fix:"False means the text says the opposite. Not Given means the text doesn't say it at all. Only use the text, never your own knowledge. If you can't find it after 1 minute, it's probably Not Given."},
+   fix:"False means the text says the opposite. Not Given means the text doesn't say it at all. Only use the text, never your own knowledge. Same words in the question and the text don't make it True: check the meaning."},
   {name:"Keyword trap", hint:"Picked it because the words matched",
    why:"You picked the answer because it used the same words as the text, but the meaning was different.",
-   fix:"Same words usually mean a trap. Read the whole sentence in the text and ask: does it mean the same? The right answer usually uses different words."},
+   fix:"Matching words alone don't make an answer right. Read the whole sentence in the text and check it means the same as the option. The right answer often uses different words."},
   {name:"Different words", hint:"The text said it in other words",
    why:"The text said the answer with different words from the question, so you didn't notice it.",
    fix:"Before reading, underline 2 key words in the question and think of other ways to say them. After the test, write each pair (question word → text word) in a list."},
   {name:"Wrong part of the text", hint:"Looked in the wrong place",
    why:"You took the answer from the wrong part of the text, or couldn't find the right part.",
-   fix:"Answers usually come in order. Find names, numbers and capital letters first to find the place fast. For headings, read the whole paragraph, not just the first line."},
+   fix:"In multiple choice, sentence completion and short answers, the answers follow the order of the text. In headings, matching and summary or table completion they can be anywhere. Look for names, numbers and capital letters to find the place fast. For headings, read the whole paragraph."},
   {name:"Ran out of time", hint:"Guessed or didn't reach it",
    why:"You guessed or didn't reach this question because time ran out.",
-   fix:"20 minutes per passage, then move on, even if you're not finished. Do the easy question types first. Never leave an answer empty; always guess."},
+   fix:"The passages get harder, so give the last one more time: about 15 minutes for Passage 1, 20 for Passage 2 and 25 for Passage 3. If a question is hard, skip it and come back. There's no extra time to copy answers, so write them as you go. Never leave an answer empty."},
   {name:"New word", hint:"I didn't know a key word",
    why:"A key word in the text or question was new to you.",
    fix:"Write it in a word list with its meaning and an example sentence. Read one article in English every day to meet new words."},
@@ -273,7 +274,7 @@ const REASONS = [
 ];
 const R = {SPELL:0, WORDS:1, NG:2, TRAP:3, DIFF:4, PLACE:5, TIME:6, NEW:7, QUES:8};
 const BANDS = {
-  a:[[39,9],[37,8.5],[35,8],[33,7.5],[30,7],[27,6.5],[23,6],[19,5.5],[15,5],[13,4.5],[10,4]],
+  a:[[39,9],[37,8.5],[35,8],[32,7.5],[30,7],[26,6.5],[23,6],[18,5.5],[16,5],[13,4.5],[11,4]],   // IDP IELTS Academic Reading table
   g:[[40,9],[39,8.5],[37,8],[36,7.5],[34,7],[32,6.5],[30,6],[27,5.5],[23,5],[19,4.5],[15,4]] };
 const RECENT = 40;
 const KEY = "rml-v1";
